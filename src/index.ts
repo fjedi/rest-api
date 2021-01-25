@@ -76,6 +76,7 @@ export type { Middleware, Next, ParameterizedContext, DefaultContext, DefaultSta
 export * from './functions';
 export * from './helpers/time';
 export * from './helpers/numbers';
+export * from './helpers/env';
 
 // @ts-ignore
 type TodoAny = any;
