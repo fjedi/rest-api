@@ -10,7 +10,6 @@ describe('Test api server', function () {
   afterAll(async () => {
     console.log('Emit afterAll test-hook');
     server?.redis?.end(true);
-    await server?.pubsub?.close();
   });
 
   it('Get valid rawType of object-like variable', async function () {
@@ -61,51 +60,6 @@ describe('Test api server', function () {
       bodyParserOptions: {
         jsonLimit: '50mb',
         textLimit: '10mb',
-      },
-      graphqlOptions: {
-        url: '/api',
-        // @ts-ignore
-        schema: {},
-        subscriptions: {
-          async onConnect(
-            connectionParams: any,
-            webSocket,
-            { request: { headers } }: { request: WSRequest },
-          ) {
-            // const db = config.getDatabaseInstance();
-            // if (headers.cookie && headers.cookie.indexOf('token') > -1) {
-            //   const { token } = Cookie.parse(headers.cookie);
-            //   const userId = token && User.getIdFromToken(token);
-            //   //
-            //   if (userId) {
-            //     const session = await UserSession.findByPk(token);
-            //     //
-            //     if (session && !session.expiredAt) {
-            //       const viewer = await User.findByPk(userId);
-            //       return {
-            //         db,
-            //         helpers: contextHelpers,
-            //         state: {
-            //           viewer,
-            //           token,
-            //           session,
-            //         },
-            //       };
-            //     }
-            //   }
-            // }
-            throw new Error('Missing auth token!');
-          },
-          // onOperation(message, params, webSocket) {
-          //   return params;
-          // },
-          // onOperationComplete(webSocket, d, a) {
-          //   return webSocket;
-          // },
-          // onDisconnect() {
-          //   logger.info('Client disconnected');
-          // },
-        },
       },
       dbOptions: {
         sync: true,
