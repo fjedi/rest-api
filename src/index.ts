@@ -190,6 +190,8 @@ export type ServerParams<
   contextHelpers?: Partial<ContextHelpers>;
 };
 
+export type StartServerParams = { beforeListen?: () => Promise<void> };
+
 export type WSRequest = Socket['request'] & {
   headers: {
     cookie?: string;
@@ -594,7 +596,7 @@ export class Server<
   initAuthMiddleware(
     authHandler: (ctx: RouteContext<TAppContext, TDatabaseModels>) => Promise<void>,
   ): void {
-    this.addMiddleware(async (ctx, next) => {
+    this.addBeforeMiddleware(async (ctx, next) => {
       // Check the Authorization cookie
       const token = ctx.cookies.get('token', { signed: true }) || ctx.get('authorization');
       if (!token) {
@@ -633,7 +635,7 @@ export class Server<
     this.db = await initDatabase<DatabaseModels>(this.dbConnection, p);
   }
 
-  async startServer(): Promise<http.Server> {
+  async startServer(params?: StartServerParams): Promise<http.Server> {
     //
     const httpTerminator = createHttpTerminator({
       server: this.httpServer,
@@ -724,6 +726,10 @@ export class Server<
     // Connect the REST API routes to the server
     this.koaApp.use(this.router.routes()).use(this.router.allowedMethods());
 
+    //
+    if (typeof params?.beforeListen === 'function') {
+      await params?.beforeListen();
+    }
     //
     this.httpServer.listen(this.port);
 
