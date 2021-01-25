@@ -256,7 +256,7 @@ export class Server<
   redis: RedisClient;
 
   //
-  httpServer?: http.Server;
+  httpServer: http.Server;
 
   // Websockets
   ws?: WebsocketServer;
@@ -505,6 +505,9 @@ export class Server<
       },
       contextHelpers || {},
     );
+
+    //
+    this.httpServer = http.createServer(this.koaApp.callback());
   }
 
   processExitHandler(opts: ExceptionHandlerProps): (e?: Error) => void {
@@ -631,10 +634,9 @@ export class Server<
   }
 
   async startServer(): Promise<http.Server> {
-    const httpServer = http.createServer(this.koaApp.callback());
     //
     const httpTerminator = createHttpTerminator({
-      server: httpServer,
+      server: this.httpServer,
     });
     // Gracefully shutdown our process in case of any uncaught exception
     await this.initExceptionHandler({
@@ -723,17 +725,14 @@ export class Server<
     this.koaApp.use(this.router.routes()).use(this.router.allowedMethods());
 
     //
-    httpServer.listen(this.port);
+    this.httpServer.listen(this.port);
 
     // Log to the terminal that we're ready for action
     logServerStarted({
       type: 'server',
     });
 
-    //
-    this.httpServer = httpServer;
-
-    return httpServer;
+    return this.httpServer;
   }
 
   async startWSServer(
