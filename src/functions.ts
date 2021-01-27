@@ -6,12 +6,19 @@ export function timeout(ms: number): Promise<NodeJS.Timeout> {
 
 //
 const ValidIdTypes = ['string', 'number'];
-export function compareIds(id1: unknown, id2: unknown): boolean {
+export function compareIds(
+  id1: unknown,
+  id2: unknown,
+  params?: { caseSensitive: boolean },
+): boolean {
   //
   if (!ValidIdTypes.includes(typeof id1) || !ValidIdTypes.includes(typeof id2)) {
     return false;
   }
-  return `${id1}` === `${id2}`;
+  if (params?.caseSensitive) {
+    return `${id1}` === `${id2}`;
+  }
+  return `${`${id1}`.toLowerCase()}` === `${`${id2}`.toLowerCase()}`;
 }
 
 export function removeUndefinedValues(values: {
