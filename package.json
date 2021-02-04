@@ -41,7 +41,7 @@
     "@fjedi/database-client": "3.9.5",
     "@fjedi/errors": "1.1.2",
     "@fjedi/jwt": "1.0.2",
-    "@fjedi/logger": "1.40.0",
+    "@fjedi/logger": "1.41.0",
     "@fjedi/redis-client": "1.0.2",
     "@sentry/integrations": "6.0.4",
     "@sentry/node": "6.0.4",
