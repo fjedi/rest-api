@@ -91,7 +91,7 @@ export const LANG_DETECTORS = {
   },
   querystring(context: ParameterizedContext, options: LangLookupParams): string | null {
     const name = options?.lookupQuerystring || 'lng';
-    return context.query[name];
+    return (context.query[name] as string) || null;
   },
   session(context: ParameterizedContext, options: LangLookupParams): string | null {
     const name = options.lookupSession || 'lng';
