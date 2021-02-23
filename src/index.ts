@@ -350,7 +350,7 @@ export class Server<
           // Debug = 2, // Information useful for debugging the SDK will be logged
           // Verbose = 3 // All SDK actions will be logged
           logLevel: this.environment === 'production' ? 1 : 3,
-          release: git.long(),
+          // release: git.long(),
           environment: this.environment,
           serverName: this.host,
           sendDefaultPii: true,
@@ -379,8 +379,12 @@ export class Server<
       Sentry.init(this.sentryOptions);
       //
       Sentry.configureScope((scope) => {
-        scope.setTag('git_commit', git.message());
-        scope.setTag('git_branch', git.branch());
+        try {
+          scope.setTag('git_commit', git.message());
+          scope.setTag('git_branch', git.branch());
+        } catch (e) {
+          this.logger.warn('Failed to attach git info to the error sent to Sentry', e);
+        }
       });
       //
       this.sentry = Sentry;
