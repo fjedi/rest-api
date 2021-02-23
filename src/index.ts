@@ -311,6 +311,9 @@ export class Server<
       this.port = 5000;
     }
     //
+    this.redis = redis;
+    this.logger = logger;
+    //
     this.dbConnection = createConnection(dbOptions);
     //
     this.bodyParserOptions = merge(
@@ -383,7 +386,7 @@ export class Server<
           scope.setTag('git_commit', git.message());
           scope.setTag('git_branch', git.branch());
         } catch (e) {
-          this.logger.warn('Failed to attach git info to the error sent to Sentry', e);
+          logger.warn('Failed to attach git info to the error sent to Sentry', e);
         }
       });
       //
@@ -438,9 +441,6 @@ export class Server<
         },
       });
     }
-    //
-    this.redis = redis;
-    this.logger = logger;
 
     // Init all API routes
     this.routes = new Set();
