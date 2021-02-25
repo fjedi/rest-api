@@ -130,7 +130,7 @@ export type RouteHandler<TAppContext, TDatabaseModels extends DatabaseModels> = 
 ) => TodoAny;
 
 export type ErrorHandler<TAppContext, TDatabaseModels extends DatabaseModels> = (
-  err: DefaultError | ValidationError | OptimisticLockError,
+  err: DefaultError | ValidationError | OptimisticLockError | DatabaseError | UniqueConstraintError,
   ctx: RouteContext<TAppContext, TDatabaseModels>,
 ) => void;
 
@@ -231,6 +231,10 @@ export class Server<
   koaAppFunc?: (app: Koa) => Promise<void>;
   handler404?: (ctx: RouteContext<TAppContext, TDatabaseModels>) => Promise<any>;
   errorHandler?: ErrorHandler<TAppContext, TDatabaseModels>;
+
+  static SYSTEM_ERROR_REGEXP = /(Database|Sequelize|Fatal|MySQL|PostgreSQL|Uncaught|Unhandled)/gim;
+  static DEFAULT_ERROR_MESSAGE =
+    'The request failed, please try again later or contact technical support';
 
   // Middlewares
   // Enable body parsing by default.  Leave `koa-bodyparser` opts as default
@@ -492,7 +496,8 @@ export class Server<
           if (typeof this.errorHandler === 'function') {
             this.errorHandler(e, context);
           } else {
-            ctx.body = 'There was an error. Please try again later.';
+            ctx.body = this.environment === 'production' ? Server.DEFAULT_ERROR_MESSAGE : e.message;
+            ctx.status = e.status || 500;
           }
         }
       }) as KoaApp<TAppContext, TDatabaseModels>;
