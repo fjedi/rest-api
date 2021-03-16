@@ -1,7 +1,7 @@
 {
   "name": "@fjedi/rest-api",
-  "version": "0.1.0",
-  "description": "NPM package template",
+  "version": "0.2.0",
+  "description": "All-in-one REST API server",
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
   "files": [
@@ -110,7 +110,7 @@
     "@typescript-eslint/parser": "4.18.0",
     "eslint": "7.22.0",
     "eslint-config-airbnb-typescript": "12.3.1",
-    "eslint-config-prettier": "7.2.0",
+    "eslint-config-prettier": "8.1.0",
     "eslint-plugin-import": "2.22.1",
     "eslint-plugin-prettier": "3.3.1",
     "husky": "4.3.8",
