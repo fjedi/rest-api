@@ -67,7 +67,7 @@
     "@types/yup": "0.29.11",
     "bignumber.js": "9.0.1",
     "bluebird": "3.7.2",
-    "boxen": "5.0.0",
+    "boxen": "5.0.1",
     "chalk": "4.1.0",
     "cookie": "0.4.1",
     "cors": "2.8.5",
