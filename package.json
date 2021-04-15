@@ -60,7 +60,7 @@
     "@types/koa-bodyparser": "4.3.0",
     "@types/koa-helmet": "6.0.2",
     "@types/koa-passport": "4.0.2",
-    "@types/koa-router": "7.4.1",
+    "@types/koa-router": "7.4.2",
     "@types/socket.io-emitter": "3.1.0",
     "@types/useragent": "2.3.0",
     "@types/uuid": "8.3.0",
