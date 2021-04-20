@@ -99,7 +99,7 @@
     "universal-cookie-koa": "4.0.3",
     "useragent": "2.3.0",
     "uuid": "8.3.2",
-    "validator": "13.5.2"
+    "validator": "13.6.0"
   },
   "devDependencies": {
     "@types/expect": "24.3.0",
