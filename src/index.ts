@@ -781,7 +781,7 @@ export class Server<
         opts,
         {
           path: path || '/socket.io',
-          wsEngine: wsEngine || 'ws',
+          wsEngine,
           adapter:
             adapter ||
             createAdapter(`redis://${redis.options.host}:${redis.options.port}`, {
