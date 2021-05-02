@@ -48,6 +48,8 @@ import { decodeJWT } from '@fjedi/jwt';
 import { Socket, Server as WebsocketServer, ServerOptions } from 'socket.io';
 import { createAdapter, RedisAdapter } from 'socket.io-redis';
 import initWSEventEmitter from 'socket.io-emitter';
+// @ts-ignore
+import { Server as eiowsEngine } from 'eiows';
 // Multi-lang support
 import i18next, {
   TFunction,
@@ -754,7 +756,7 @@ export class Server<
     httpServerOrPort: number | http.Server,
     o?: Partial<WSServerOptions>,
   ): Promise<WebsocketServer> {
-    const { adapter, path, wsEngine, cors: corsOptions, ...opts } = o || {};
+    const { adapter, path, wsEngine = eiowsEngine, cors: corsOptions, ...opts } = o || {};
     const { allowedOrigins } = this;
     const defaultCORSOptions: ExpressCORSOptions = {
       credentials: this.corsOptions.credentials,
