@@ -93,7 +93,7 @@
     "mysql2": "2.2.5",
     "passport-vkontakte": "0.5.0",
     "pretty-error": "3.0.3",
-    "socket.io": "4.0.2",
+    "socket.io": "4.1.0",
     "socket.io-emitter": "3.2.0",
     "socket.io-redis": "6.1.0",
     "transliteration": "2.2.0",
