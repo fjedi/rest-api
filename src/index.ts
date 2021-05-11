@@ -112,19 +112,17 @@ export type ContextState = DefaultState & {
   decodedAuthToken?: { sub: string; [k: string]: unknown };
 };
 
-export type RouteContext<
-  TAppContext,
-  TDatabaseModels extends DatabaseModels
-> = ParameterizedContext<ContextState, DefaultContext> & {
-  db: DatabaseConnection<TDatabaseModels>;
-  redis: RedisClient;
-  t?: TFunction;
-  i18next?: i18n;
-  language: string;
-  logger: Logger;
-  sentry?: typeof Sentry;
-  helpers: ContextHelpers;
-} & TAppContext;
+export type RouteContext<TAppContext, TDatabaseModels extends DatabaseModels> =
+  ParameterizedContext<ContextState, DefaultContext> & {
+    db: DatabaseConnection<TDatabaseModels>;
+    redis: RedisClient;
+    t?: TFunction;
+    i18next?: i18n;
+    language: string;
+    logger: Logger;
+    sentry?: typeof Sentry;
+    helpers: ContextHelpers;
+  } & TAppContext;
 
 export type RouteHandler<TAppContext, TDatabaseModels extends DatabaseModels> = (
   ctx: RouteContext<TAppContext, TDatabaseModels>,
@@ -180,7 +178,7 @@ export type SentryErrorProps = {
 
 export type ServerParams<
   TAppContext extends ParameterizedContext<ContextState, ParameterizedContext>,
-  TDatabaseModels extends DatabaseModels
+  TDatabaseModels extends DatabaseModels,
 > = {
   allowedOrigins?: string[];
   dbOptions: DatabaseConnectionOptions;
@@ -218,7 +216,7 @@ export type WSServerOptions = ServerOptions;
 
 export class Server<
   TAppContext extends ParameterizedContext<ContextState, ParameterizedContext>,
-  TDatabaseModels extends DatabaseModels
+  TDatabaseModels extends DatabaseModels,
 > {
   environment: 'production' | 'development';
   host: string;
@@ -583,25 +581,23 @@ export class Server<
     }
     const { fallbackLng } = this.multiLangOptions;
     //
-    this.addMiddleware(
-      async (ctx, next): Promise<void> => {
-        //
-        const i18nextInstance = i18next.cloneInstance();
-        //
-        ctx.i18next = i18nextInstance;
-        // Saving language to the current koaContext
-        const lng = detectContextLang(ctx, Server.LANG_DETECTION_DEFAULT_OPTIONS) || fallbackLng;
-        await i18nextInstance.changeLanguage(lng);
-        Server.setContextLang(ctx, lng, Server.LANG_DETECTION_DEFAULT_OPTIONS);
-        //
-        ctx.t = function translate(...args: any) {
-          // @ts-ignore
-          return ctx.i18next.t.apply(ctx.i18next, [...args]);
-        };
-        //
-        await next();
-      },
-    );
+    this.addMiddleware(async (ctx, next): Promise<void> => {
+      //
+      const i18nextInstance = i18next.cloneInstance();
+      //
+      ctx.i18next = i18nextInstance;
+      // Saving language to the current koaContext
+      const lng = detectContextLang(ctx, Server.LANG_DETECTION_DEFAULT_OPTIONS) || fallbackLng;
+      await i18nextInstance.changeLanguage(lng);
+      Server.setContextLang(ctx, lng, Server.LANG_DETECTION_DEFAULT_OPTIONS);
+      //
+      ctx.t = function translate(...args: any) {
+        // @ts-ignore
+        return ctx.i18next.t.apply(ctx.i18next, [...args]);
+      };
+      //
+      await next();
+    });
   }
 
   initAuthMiddleware(
@@ -811,7 +807,7 @@ export class Server<
         return;
       }
       //
-      const adapter = (this.ws.of('/').adapter as unknown) as RedisAdapter;
+      const adapter = this.ws.of('/').adapter as unknown as RedisAdapter;
       await adapter.remoteJoin(socket.id, `${roomId}`);
     } catch (err) {
       this.logger.error(err);

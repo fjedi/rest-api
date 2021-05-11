@@ -21,9 +21,9 @@ export function compareIds(
   return `${`${id1}`.toLowerCase()}` === `${`${id2}`.toLowerCase()}`;
 }
 
-export function removeUndefinedValues(values: {
+export function removeUndefinedValues(values: { [key: string]: unknown }): {
   [key: string]: unknown;
-}): { [key: string]: unknown } {
+} {
   const res: { [key: string]: unknown } = {};
   Object.keys(values).forEach((key) => {
     if (typeof values[key] !== 'undefined') {
