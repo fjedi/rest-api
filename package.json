@@ -56,7 +56,7 @@
     "@types/ip": "1.1.0",
     "@types/json-buffer": "3.0.0",
     "@types/kcors": "2.2.3",
-    "@types/koa": "2.13.1",
+    "@types/koa": "2.13.2",
     "@types/koa-bodyparser": "4.3.0",
     "@types/koa-helmet": "6.0.2",
     "@types/koa-passport": "4.0.2",
