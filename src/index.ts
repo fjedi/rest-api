@@ -112,17 +112,19 @@ export type ContextState = DefaultState & {
   decodedAuthToken?: { sub: string; [k: string]: unknown };
 };
 
-export type RouteContext<TAppContext, TDatabaseModels extends DatabaseModels> =
-  ParameterizedContext<ContextState, DefaultContext> & {
-    db: DatabaseConnection<TDatabaseModels>;
-    redis: RedisClient;
-    t?: TFunction;
-    i18next?: i18n;
-    language: string;
-    logger: Logger;
-    sentry?: typeof Sentry;
-    helpers: ContextHelpers;
-  } & TAppContext;
+export type RouteContext<
+  TAppContext,
+  TDatabaseModels extends DatabaseModels,
+> = ParameterizedContext<ContextState, DefaultContext> & {
+  db: DatabaseConnection<TDatabaseModels>;
+  redis: RedisClient;
+  t?: TFunction;
+  i18next?: i18n;
+  language: string;
+  logger: Logger;
+  sentry?: typeof Sentry;
+  helpers: ContextHelpers;
+} & TAppContext;
 
 export type RouteHandler<TAppContext, TDatabaseModels extends DatabaseModels> = (
   ctx: RouteContext<TAppContext, TDatabaseModels>,
