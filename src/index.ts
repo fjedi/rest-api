@@ -639,22 +639,13 @@ export class Server<
     token: string,
     options?: Partial<CookieOptions>,
   ): void {
-    const {
-      cookieName = 'token',
-      secure = true,
-      overwrite = true,
-      httpOnly = true,
-      signed = true,
-      domain,
-    } = options || {};
+    const { cookieName = 'token', ...cookieOptions } = options || {};
     // Saving user's token to cookies
-    context.cookies.set(cookieName, token, {
-      signed,
-      httpOnly,
-      overwrite,
-      secure,
-      domain,
-    });
+    context.cookies.set(
+      cookieName,
+      token,
+      merge({ secure: true, overwrite: true, httpOnly: true, signed: true }, cookieOptions),
+    );
   }
 
   async bindModelsToDBConnection(p: InitDatabaseOptions<TDatabaseModels>): Promise<void> {
