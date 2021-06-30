@@ -15,7 +15,7 @@ import koaHelmet from 'koa-helmet';
 // // Parse userAgent
 // import UserAgent from 'useragent';
 // // Cookies
-// import Cookie from 'cookie';
+import { SetOption } from 'cookies';
 // @ts-ignore
 import cookiesMiddleware from 'universal-cookie-koa';
 // High-precision timing, so we can debug response time to serve a request
@@ -111,6 +111,10 @@ export type ContextState = DefaultState & {
   authToken?: string;
   decodedAuthToken?: { sub: string; [k: string]: unknown };
 };
+
+export interface CookieOptions extends SetOption {
+  cookieName?: string;
+}
 
 export type RouteContext<
   TAppContext,
@@ -630,12 +634,26 @@ export class Server<
     });
   }
 
-  static setAuthCookie(context: ParameterizedContext, token: string, cookieName = 'token'): void {
+  static setAuthCookie(
+    context: ParameterizedContext,
+    token: string,
+    options?: Partial<CookieOptions>,
+  ): void {
+    const {
+      cookieName = 'token',
+      secure = true,
+      overwrite = true,
+      httpOnly = true,
+      signed = true,
+      domain,
+    } = options || {};
     // Saving user's token to cookies
     context.cookies.set(cookieName, token, {
-      signed: true,
-      httpOnly: true,
-      overwrite: true,
+      signed,
+      httpOnly,
+      overwrite,
+      secure,
+      domain,
     });
   }
 
