@@ -46,7 +46,7 @@
     "@sentry/integrations": "6.8.0",
     "@sentry/node": "6.8.0",
     "@types/component-emitter": "1.2.10",
-    "@types/cookie": "0.4.0",
+    "@types/cookie": "0.4.1",
     "@types/cors": "2.8.10",
     "@types/geoip-lite": "1.4.1",
     "@types/git-rev-sync": "2.0.0",
