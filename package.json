@@ -50,7 +50,7 @@
     "@types/cors": "2.8.11",
     "@types/geoip-lite": "1.4.1",
     "@types/git-rev-sync": "2.0.0",
-    "@types/http-terminator": "2.0.1",
+    "@types/http-terminator": "2.0.2",
     "@types/invariant": "2.2.34",
     "@types/ioredis": "4.26.5",
     "@types/ip": "1.1.0",
