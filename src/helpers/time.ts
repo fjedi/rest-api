@@ -1,11 +1,27 @@
 import dayjs, { Dayjs, ConfigType, OpUnitType } from 'dayjs';
+import dayOfYearPlugin from 'dayjs/plugin/dayOfYear';
 import isoWeekPlugin from 'dayjs/plugin/isoWeek';
+import weekdayPlugin from 'dayjs/plugin/weekday';
 import utcPlugin from 'dayjs/plugin/utc';
 import tzPlugin from 'dayjs/plugin/timezone';
+import isBetweenPlugin from 'dayjs/plugin/isBetween';
+import isSameOrBeforePlugin from 'dayjs/plugin/isSameOrBefore';
+import isSameOrAfterPlugin from 'dayjs/plugin/isSameOrAfter';
+import customParseFormatPlugin from 'dayjs/plugin/customParseFormat';
+import localizedFormatPlugin from 'dayjs/plugin/localizedFormat';
+import localeDataPlugin from 'dayjs/plugin/localeData';
 
 dayjs.extend(tzPlugin);
 dayjs.extend(utcPlugin);
+dayjs.extend(dayOfYearPlugin);
 dayjs.extend(isoWeekPlugin);
+dayjs.extend(weekdayPlugin);
+dayjs.extend(isBetweenPlugin);
+dayjs.extend(isSameOrBeforePlugin);
+dayjs.extend(isSameOrAfterPlugin);
+dayjs.extend(customParseFormatPlugin);
+dayjs.extend(localizedFormatPlugin);
+dayjs.extend(localeDataPlugin);
 
 type ISOUnitType = OpUnitType | 'isoWeek';
 export interface TimeInstance extends Dayjs {
