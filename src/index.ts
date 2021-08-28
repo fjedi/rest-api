@@ -235,7 +235,7 @@ export class Server<
   middleware: Set<Middleware<ContextState, RouteContext<TAppContext, TDatabaseModels>>>;
   beforeMiddleware: Set<Middleware<ContextState, RouteContext<TAppContext, TDatabaseModels>>>;
   koaAppFunc?: (app: Koa) => Promise<void>;
-  handler404?: (ctx: RouteContext<TAppContext, TDatabaseModels>) => Promise<any>;
+  handler404?: (ctx: RouteContext<TAppContext, TDatabaseModels>) => Promise<TodoAny>;
   errorHandler?: ErrorHandler<TAppContext, TDatabaseModels>;
 
   static SYSTEM_ERROR_REGEXP = /(Database|Sequelize|Fatal|MySQL|PostgreSQL|Uncaught|Unhandled)/gim;
@@ -489,9 +489,10 @@ export class Server<
         try {
           await next();
         } catch (e) {
-          const isSystemError = !e.status || e.status >= 500;
+          const errorCode = e instanceof DefaultError ? e.status : 500;
+          const isSystemError = !errorCode || errorCode >= 500;
           if (isSystemError) {
-            this.logger.error(e);
+            this.logger.error(e as Error);
           }
           //
           if (Sentry && typeof Sentry.captureException === 'function' && isSystemError) {
@@ -500,10 +501,13 @@ export class Server<
           // If we have a custom error handler, use that - else simply log a
           // message and return one to the user
           if (typeof this.errorHandler === 'function') {
-            this.errorHandler(e, context);
+            this.errorHandler(e as DefaultError, context);
           } else {
-            ctx.body = this.environment === 'production' ? Server.DEFAULT_ERROR_MESSAGE : e.message;
-            ctx.status = e.status || 500;
+            ctx.body =
+              this.environment === 'production'
+                ? Server.DEFAULT_ERROR_MESSAGE
+                : (e as Error).message;
+            ctx.status = errorCode || 500;
           }
         }
       }) as KoaApp<TAppContext, TDatabaseModels>;
@@ -597,7 +601,7 @@ export class Server<
       await i18nextInstance.changeLanguage(lng);
       Server.setContextLang(ctx, lng, Server.LANG_DETECTION_DEFAULT_OPTIONS);
       //
-      ctx.t = function translate(...args: any) {
+      ctx.t = function translate(...args: TodoAny) {
         // @ts-ignore
         return ctx.i18next.t.apply(ctx.i18next, [...args]);
       };
@@ -626,8 +630,10 @@ export class Server<
           await authHandler(ctx as RouteContext<TAppContext, TDatabaseModels>);
         }
       } catch (exception) {
-        this.logger.error(`[authMiddleware] ${exception.message}`);
-        this.logger.error(exception);
+        if (exception instanceof Error) {
+          this.logger.error(`[authMiddleware] ${exception.message}`);
+        }
+        this.logger.error(exception as Error);
       }
       //
       await next();
@@ -821,7 +827,7 @@ export class Server<
       const adapter = this.ws.of('/').adapter as unknown as RedisAdapter;
       await adapter.remoteJoin(socket.id, `${roomId}`);
     } catch (err) {
-      this.logger.error(err);
+      this.logger.error(err as Error);
       this.sentry?.captureException(err);
     }
   }
@@ -938,7 +944,7 @@ export class Server<
       return;
     }
     // @ts-ignore
-    let meta: any = error.data || {};
+    let meta: TodoAny = error.data || {};
     //
     if (error instanceof DefaultError && error.originalError instanceof DefaultError) {
       meta = { ...error.originalError.data, ...meta };
