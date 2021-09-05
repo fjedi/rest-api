@@ -7,7 +7,7 @@ const DB_MAX_CONNECTIONS = parseInt(process.env.DB_MAX_CONNECTIONS || '', 10) ||
 describe('Test api server', function () {
   let server: Server<any, any> | undefined;
 
-  afterAll(async () => {
+  afterAll(() => {
     console.log('Emit afterAll test-hook');
     server?.redis?.end(true);
   });
