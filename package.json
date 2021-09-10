@@ -42,7 +42,7 @@
     "@fjedi/errors": "1.1.4",
     "@fjedi/jwt": "1.0.4",
     "@fjedi/logger": "1.46.3",
-    "@fjedi/redis-client": "1.162.0",
+    "@fjedi/redis-client": "1.163.0",
     "@sentry/integrations": "6.12.0",
     "@sentry/node": "6.12.0",
     "@types/component-emitter": "1.2.10",
