@@ -1,10 +1,7 @@
-import { v1 as uuidV1 } from 'uuid';
+import { randomUUID } from 'crypto';
 
-export function uuid(version: number): string {
-  if (version && version !== 1) {
-    throw new Error(`Invalid "version" passed to "uuid" generator: ${version}`);
-  }
-  return uuidV1();
+export function uuid(): string {
+  return randomUUID();
 }
 
 export default null;
