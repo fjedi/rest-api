@@ -489,24 +489,27 @@ export class Server<
         try {
           await next();
         } catch (e) {
+          const error = e as Error;
           const errorCode = e instanceof DefaultError ? e.status : 500;
-          const isSystemError = !errorCode || errorCode >= 500;
-          if (isSystemError) {
-            this.logger.error(e as Error);
+          const isPublicError =
+            typeof errorCode === 'number' &&
+            (errorCode < 500 || !Server.SYSTEM_ERROR_REGEXP.test(error?.message));
+          if (!isPublicError) {
+            this.logger.error(error);
           }
           //
-          if (Sentry && typeof Sentry.captureException === 'function' && isSystemError) {
-            Sentry.captureException(e);
+          if (Sentry && typeof Sentry.captureException === 'function' && !isPublicError) {
+            Sentry.captureException(error);
           }
           // If we have a custom error handler, use that - else simply log a
           // message and return one to the user
           if (typeof this.errorHandler === 'function') {
-            this.errorHandler(e as DefaultError, context);
+            this.errorHandler(error, context);
           } else {
             ctx.body =
-              this.environment === 'production'
+              this.environment === 'production' && !isPublicError
                 ? Server.DEFAULT_ERROR_MESSAGE
-                : (e as Error).message;
+                : error.message;
             ctx.status = errorCode || 500;
           }
         }
@@ -719,7 +722,11 @@ export class Server<
     this.koaApp.proxy = true;
 
     // Middleware to add preliminary security for HTTP headers via Koa Helmet
-    this.koaApp.use(koaHelmet());
+    this.koaApp.use(
+      koaHelmet({
+        contentSecurityPolicy: this.environment === 'production',
+      }),
+    );
 
     // Attach custom middleware
     this.middleware.forEach((middlewareFunc) => this.koaApp.use(middlewareFunc));
