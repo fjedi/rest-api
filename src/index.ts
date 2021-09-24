@@ -506,11 +506,14 @@ export class Server<
           if (typeof this.errorHandler === 'function') {
             this.errorHandler(error, context);
           } else {
-            ctx.body =
-              this.environment === 'production' && !isPublicError
-                ? Server.DEFAULT_ERROR_MESSAGE
-                : error.message;
-            ctx.status = errorCode || 500;
+            ctx.status = errorCode && errorCode > 100 && errorCode < 600 ? errorCode : 500;
+            ctx.body = {
+              message:
+                this.environment === 'production' && !isPublicError
+                  ? Server.DEFAULT_ERROR_MESSAGE
+                  : error.message,
+              status: errorCode || 500,
+            };
           }
         }
       }) as KoaApp<TAppContext, TDatabaseModels>;
