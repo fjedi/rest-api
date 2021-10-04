@@ -1,5 +1,9 @@
 import { ParameterizedContext } from 'koa';
+import { DatabaseModels } from '@fjedi/database-client';
 import { get } from 'lodash';
+import type { RouteContext } from '..';
+
+export type LangContext = RouteContext<unknown, DatabaseModels>;
 
 export type LangLookupParams = {
   lookupCookie?: string;
@@ -20,15 +24,15 @@ export const LANG_DETECTION_DEFAULT_OPTIONS = {
 };
 
 export const LANG_DETECTORS = {
-  user(context: ParameterizedContext): string | null {
+  user(context: LangContext): string | null {
     return get(context, 'state.viewer.languageCode');
   },
-  cookie(context: ParameterizedContext, options: LangLookupParams): string | null | undefined {
+  cookie(context: LangContext, options: LangLookupParams): string | null | undefined {
     const cookie = options.lookupCookie || 'i18next';
     return context.cookies.get(cookie);
   },
   // fork from i18next-express-middleware
-  header(context: ParameterizedContext): string[] | undefined {
+  header(context: LangContext): string[] | undefined {
     const acceptLanguage = context.get('accept-language');
     let found;
     const locales = [];
@@ -69,7 +73,7 @@ export const LANG_DETECTORS = {
 
     return found;
   },
-  path(context: ParameterizedContext, options: LangLookupParams): string | null {
+  path(context: LangContext, options: LangLookupParams): string | null {
     let found;
 
     if (options.lookupPath !== undefined && context.params) {
@@ -89,20 +93,17 @@ export const LANG_DETECTORS = {
     }
     return found;
   },
-  querystring(context: ParameterizedContext, options: LangLookupParams): string | null {
+  querystring(context: LangContext, options: LangLookupParams): string | null {
     const name = options?.lookupQuerystring || 'lng';
     return (context.query[name] as string) || null;
   },
-  session(context: ParameterizedContext, options: LangLookupParams): string | null {
+  session(context: LangContext, options: LangLookupParams): string | null {
     const name = options.lookupSession || 'lng';
     return context.session && context.session[name];
   },
 };
 
-export function detectContextLang(
-  context: ParameterizedContext,
-  options: LangLookupParams,
-): string {
+export function detectContextLang(context: LangContext, options: LangLookupParams): string {
   let { order } = options || {};
   order = order && Array.isArray(order) ? order : LANG_DETECTION_DEFAULT_ORDER;
 
@@ -125,12 +126,12 @@ export function detectContextLang(
   let found;
   // eslint-disable-next-line no-plusplus
   for (let i = 0, len = languages.length; i < len; i++) {
-    const cleanedLng = context.i18next.services.languageUtils.formatLanguageCode(languages[i]);
-    if (context.i18next.services.languageUtils.isWhitelisted(cleanedLng)) found = cleanedLng;
+    const cleanedLng = context.i18next?.services.languageUtils.formatLanguageCode(languages[i]);
+    if (context.i18next?.services.languageUtils.isSupportedCode(cleanedLng)) found = cleanedLng;
     if (found) break;
   }
 
-  if (found && context.i18next.services.languageUtils.options.load === 'languageOnly') {
+  if (found && context.i18next?.services.languageUtils.options.load === 'languageOnly') {
     return found.substring(0, 2);
   }
 

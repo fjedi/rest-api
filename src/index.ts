@@ -70,6 +70,7 @@ import {
   detectContextLang,
   LANG_DETECTION_DEFAULT_OPTIONS,
   LANG_DETECTION_DEFAULT_ORDER,
+  LangContext,
 } from './helpers/i18n';
 
 export type RouteMethod = 'get' | 'post' | 'delete' | 'update' | 'put' | 'patch';
@@ -603,7 +604,9 @@ export class Server<
       //
       ctx.i18next = i18nextInstance;
       // Saving language to the current koaContext
-      const lng = detectContextLang(ctx, Server.LANG_DETECTION_DEFAULT_OPTIONS) || fallbackLng;
+      const lng =
+        detectContextLang(ctx as unknown as LangContext, Server.LANG_DETECTION_DEFAULT_OPTIONS) ||
+        fallbackLng;
       await i18nextInstance.changeLanguage(lng);
       Server.setContextLang(ctx, lng, Server.LANG_DETECTION_DEFAULT_OPTIONS);
       //
