@@ -78,7 +78,7 @@
     "git-rev-sync": "3.0.1",
     "http": "0.0.1-security",
     "http-terminator": "3.0.4",
-    "i18next": "21.5.4",
+    "i18next": "21.5.5",
     "i18next-sync-fs-backend": "1.1.1",
     "invariant": "2.2.4",
     "ip": "1.1.5",
