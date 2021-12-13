@@ -65,7 +65,7 @@
     "@types/useragent": "2.3.1",
     "@types/uuid": "8.3.3",
     "@types/yup": "0.29.13",
-    "bignumber.js": "9.0.1",
+    "bignumber.js": "9.0.2",
     "bluebird": "3.7.2",
     "boxen": "5.1.2",
     "chalk": "4.1.2",
