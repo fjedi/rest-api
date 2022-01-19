@@ -75,7 +75,7 @@
     "dayjs": "1.10.7",
     "eiows": "3.7.3",
     "geoip-lite": "1.4.3",
-    "git-rev-sync": "3.0.1",
+    "git-rev-sync": "3.0.2",
     "http": "0.0.1-security",
     "http-terminator": "3.0.4",
     "i18next": "21.6.6",
