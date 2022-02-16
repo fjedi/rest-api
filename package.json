@@ -73,7 +73,7 @@
     "cookies": "0.8.0",
     "cors": "2.8.5",
     "dayjs": "1.10.7",
-    "eiows": "3.7.3",
+    "eiows": "3.8.0",
     "geoip-lite": "1.4.3",
     "git-rev-sync": "3.0.2",
     "http": "0.0.1-security",
