@@ -74,7 +74,7 @@
     "cors": "2.8.5",
     "dayjs": "1.10.8",
     "eiows": "3.8.0",
-    "geoip-lite": "1.4.3",
+    "geoip-lite": "1.4.4",
     "git-rev-sync": "3.0.2",
     "http": "0.0.1-security",
     "http-terminator": "3.1.0",
