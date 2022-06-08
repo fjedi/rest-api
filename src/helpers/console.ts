@@ -2,7 +2,7 @@
 // Display a border around a message
 import boxen from 'boxen';
 // Chalk library, to add colour to our console logs
-import chalk, { Chalk } from 'chalk';
+import chalk, { ChalkInstance } from 'chalk';
 // IP library, for determining the local network interface
 import ip from 'ip';
 
@@ -13,8 +13,8 @@ export type ServerStartLogger = {
   host?: string;
   port?: number | string;
   allowSSL?: boolean;
-  chalk?: Chalk;
-  bold?: Chalk;
+  chalk?: ChalkInstance;
+  bold?: ChalkInstance;
   type: string;
 };
 
