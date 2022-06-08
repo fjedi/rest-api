@@ -7,7 +7,7 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./lib/esm",
-    "moduleResolution": "node16"
+    "moduleResolution": "node"
   },
   "include": [
     "./src"
