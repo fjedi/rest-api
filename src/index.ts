@@ -47,7 +47,7 @@ import { decodeJWT } from '@fjedi/jwt';
 // Socket.io
 import { Socket, Server as WebsocketServer, ServerOptions } from 'socket.io';
 import { createAdapter, RedisAdapter } from '@socket.io/redis-adapter';
-import initWSEventEmitter from 'socket.io-emitter';
+import { Emitter as WsEventEmitter } from '@socket.io/redis-emitter';
 // @ts-ignore
 import { Server as eiowsEngine } from 'eiows';
 // Multi-lang support
@@ -273,7 +273,7 @@ export class Server<
 
   // Websockets
   ws?: WebsocketServer;
-  wsEventEmitter?: initWSEventEmitter.SocketIOEmitter;
+  wsEventEmitter?: WsEventEmitter;
 
   constructor(params: ServerParams<TAppContext, TDatabaseModels>) {
     const {
@@ -829,8 +829,7 @@ export class Server<
     }
     this.ws = ws;
 
-    // @ts-ignore
-    this.wsEventEmitter = initWSEventEmitter(redis);
+    this.wsEventEmitter = new WsEventEmitter(redis);
 
     return ws;
   }

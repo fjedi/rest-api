@@ -1,6 +1,6 @@
 {
   "name": "@fjedi/rest-api",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "All-in-one REST API server",
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
@@ -46,6 +46,7 @@
     "@sentry/integrations": "7.4.1",
     "@sentry/node": "7.4.1",
     "@socket.io/redis-adapter": "7.2.0",
+    "@socket.io/redis-emitter": "4.1.1",
     "@types/component-emitter": "1.2.11",
     "@types/cookie": "0.5.1",
     "@types/cors": "2.8.12",
@@ -97,7 +98,6 @@
     "pg-hstore": "2.3.4",
     "pretty-error": "4.0.0",
     "socket.io": "4.5.1",
-    "socket.io-emitter": "3.2.0",
     "transliteration": "2.2.0",
     "universal-cookie-koa": "4.1.0",
     "useragent": "2.3.0",
