@@ -90,7 +90,7 @@
     "koa-bodyparser": "4.3.0",
     "koa-helmet": "6.1.0",
     "koa-passport": "4.1.4",
-    "koa-router": "10.1.1",
+    "koa-router": "11.0.1",
     "lodash": "4.17.21",
     "microseconds": "0.2.0",
     "mysql2": "2.3.3",
