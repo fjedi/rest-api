@@ -46,7 +46,7 @@ import { logger, Logger } from '@fjedi/logger';
 import { decodeJWT } from '@fjedi/jwt';
 // Socket.io
 import { Socket, Server as WebsocketServer, ServerOptions } from 'socket.io';
-import { createAdapter, RedisAdapter } from 'socket.io-redis';
+import { createAdapter, RedisAdapter } from '@socket.io/redis-adapter';
 import initWSEventEmitter from 'socket.io-emitter';
 // @ts-ignore
 import { Server as eiowsEngine } from 'eiows';
@@ -812,9 +812,14 @@ export class Server<
           wsEngine,
           adapter:
             adapter ||
-            createAdapter(`redis://${redis.options.host}:${redis.options.port}`, {
-              requestsTimeout: 5000,
-            }),
+            (function createSocketIOAdapter() {
+              const pubClient = redis.duplicate();
+              const subClient = redis.duplicate();
+              //
+              return createAdapter(pubClient, subClient, {
+                requestsTimeout: 5000,
+              });
+            })(),
         },
       ),
     );
