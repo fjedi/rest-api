@@ -490,7 +490,7 @@ export class Server<
         try {
           await next();
         } catch (e) {
-          const error = e as Error;
+          const error = e as DefaultError;
           const errorCode = e instanceof DefaultError ? e.status : 500;
           const isPublicError =
             typeof errorCode === 'number' &&
