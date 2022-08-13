@@ -1,6 +1,6 @@
 {
   "name": "@fjedi/rest-api",
-  "version": "3.2.4",
+  "version": "3.2.5",
   "description": "All-in-one REST API server",
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
@@ -38,7 +38,7 @@
   },
   "homepage": "https://github.com/fjedi/rest-api#readme",
   "dependencies": {
-    "@fjedi/database-client": "4.3.3",
+    "@fjedi/database-client": "4.3.4",
     "@fjedi/errors": "1.1.4",
     "@fjedi/jwt": "1.0.4",
     "@fjedi/logger": "1.46.3",
