@@ -655,11 +655,21 @@ export class Server<
     options?: Partial<CookieOptions>,
   ): void {
     const { cookieName = 'token', ...cookieOptions } = options || {};
+    const referrer = context.get('referrer') || context.get('referer');
     // Saving user's token to cookies
     context.cookies.set(
       cookieName,
       token,
-      merge({ secure: true, overwrite: true, httpOnly: true, signed: true }, cookieOptions),
+      merge(
+        {
+          secure: context.secure,
+          overwrite: true,
+          httpOnly: true,
+          signed: true,
+          sameSite: referrer.includes('localhost') ? 'none' : 'lax',
+        },
+        cookieOptions,
+      ),
     );
   }
 
