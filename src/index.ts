@@ -635,20 +635,13 @@ export class Server<
         await next();
         return;
       }
-      try {
-        const decodedAuthToken = decodeJWT(token) as { sub: string };
-        ctx.state.authToken = token;
-        ctx.state.decodedAuthToken = decodedAuthToken;
+      const decodedAuthToken = decodeJWT(token) as { sub: string };
+      ctx.state.authToken = token;
+      ctx.state.decodedAuthToken = decodedAuthToken;
+      //
+      if (decodedAuthToken.sub) {
         //
-        if (decodedAuthToken.sub) {
-          //
-          await authHandler(ctx as RouteContext<TAppContext, TDatabaseModels>);
-        }
-      } catch (exception) {
-        if (exception instanceof Error) {
-          this.logger.error(`[authMiddleware] ${exception.message}`);
-        }
-        this.logger.error(exception as Error);
+        await authHandler(ctx as RouteContext<TAppContext, TDatabaseModels>);
       }
       //
       await next();
