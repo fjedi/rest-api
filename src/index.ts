@@ -2,7 +2,15 @@
 import isValidPort from 'validator/lib/isPort';
 import http from 'http';
 import { createHttpTerminator } from 'http-terminator';
-import Koa, { Middleware, Next, ParameterizedContext, DefaultContext, DefaultState } from 'koa';
+import Koa, {
+  Request,
+  Response,
+  Middleware,
+  Next,
+  ParameterizedContext,
+  DefaultContext,
+  DefaultState,
+} from 'koa';
 // Koa Router, for handling REST API requests
 import KoaRouter, { IParamMiddleware } from 'koa-router';
 // Enable cross-origin requests
@@ -466,7 +474,7 @@ export class Server<
     // Build the router, based on our app's settings.  This will define which
     // Koa route handlers
     this.router = new KoaRouter()
-      // Set-up a general purpose /ping route to check the server is alive
+      // Set up a general purpose /ping route to check the server is alive
       .get('/ping', async (ctx) => {
         ctx.body = 'pong';
       })
@@ -499,9 +507,7 @@ export class Server<
             this.logger.error(error);
           }
           //
-          if (Sentry && typeof Sentry.captureException === 'function' && !isPublicError) {
-            Sentry.captureException(error);
-          }
+          this.sendErrorToSentry(error, ctx);
           // If we have a custom error handler, use that - else simply log a
           // message and return one to the user
           if (typeof this.errorHandler === 'function') {
@@ -962,12 +968,14 @@ export class Server<
     this.addRoute('delete', route, ...handlers);
   }
 
-  async sendErrorToSentry(error: SentryError, args: SentryErrorProps): Promise<void> {
+  sendErrorToSentry(error: SentryError, args: SentryErrorProps): void {
     if (!this.sentry) {
-      const e =
-        'Sentry instance has not been initialized. Failed to send error to the Sentry cloud';
-      this.logger.error(e);
-      this.logger.error(error);
+      if (this.sentryOptions) {
+        const e =
+          'Sentry instance has not been initialized. Failed to send error to the Sentry cloud';
+        this.logger.error(e);
+        this.logger.error(error);
+      }
       return;
     }
     // @ts-ignore
@@ -983,7 +991,7 @@ export class Server<
       error instanceof UniqueConstraintError
     ) {
       // If we've got a Sequelize validationError,
-      // than we should get the first error from array of errors
+      // then we should get the first error from array of errors
       // eslint-disable-next-line prefer-destructuring
       meta.instance = pick(get(error, 'errors[0].instance', {}), [
         'dataValues',
@@ -1018,7 +1026,7 @@ export class Server<
       //
       messagePrefix = `${messagePrefix}[${compact(messagePrefixChunks).join(' ')}] `;
     }
-    // Try to get meta data from the args if error has been emitted not from koa web-server (doesn't have any context.request)
+    // Try to get metadata from the args if error has been emitted not from koa web-server (doesn't have any context.request)
     if (!request) {
       Object.keys(args).forEach((argKey) => {
         // @ts-ignore
