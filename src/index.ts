@@ -3,7 +3,6 @@ import isValidPort from 'validator/lib/isPort';
 import http from 'http';
 import { createHttpTerminator } from 'http-terminator';
 import Koa, {
-  Request,
   Response,
   Middleware,
   Next,
