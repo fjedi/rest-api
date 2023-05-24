@@ -22,13 +22,13 @@ import bodyParser from 'koa-bodyparser';
 import koaHelmet from 'koa-helmet';
 // // Cookies
 import { SetOption } from 'cookies';
-// @ts-ignore
 import cookiesMiddleware from 'universal-cookie-koa';
 // High-precision timing, so we can debug response time to serve a request
 import ms from 'microseconds';
 import { get, pick, flattenDeep, merge, compact, map, trim } from 'lodash';
 // Sentry
 import * as Sentry from '@sentry/node';
+import type { PolymorphicRequest } from '@sentry/types';
 import * as Integrations from '@sentry/integrations';
 import git from 'git-rev-sync';
 // Database
@@ -51,7 +51,7 @@ import { logger, Logger } from '@fjedi/logger';
 import { decodeJWT } from '@fjedi/jwt';
 // Socket.io
 import { Socket, Server as WebsocketServer, ServerOptions } from 'socket.io';
-import { createAdapter, RedisAdapter } from '@socket.io/redis-adapter';
+import { createAdapter } from '@socket.io/redis-adapter';
 import { Emitter as WsEventEmitter } from '@socket.io/redis-emitter';
 // @ts-ignore
 import { Server as eiowsEngine } from 'eiows';
@@ -78,7 +78,7 @@ import {
   LangContext,
 } from './helpers/i18n';
 
-export type RouteMethod = 'get' | 'post' | 'delete' | 'update' | 'put' | 'patch';
+export type RouteMethod = 'get' | 'post' | 'delete' | 'put' | 'patch';
 export type { Middleware, Next, ParameterizedContext, DefaultContext, DefaultState } from 'koa';
 //
 export * from './functions';
@@ -120,6 +120,8 @@ export interface CookieOptions extends SetOption {
   cookieName?: string;
 }
 
+export type KoaRequest = Omit<Koa.Request, 'body'> & PolymorphicRequest;
+
 export type RouteContext<
   TAppContext,
   TDatabaseModels extends DatabaseModels,
@@ -132,6 +134,7 @@ export type RouteContext<
   logger: Logger;
   sentry?: typeof Sentry;
   helpers: ContextHelpers;
+  request: KoaRequest;
 } & TAppContext;
 
 export type RouteHandler<TAppContext, TDatabaseModels extends DatabaseModels> = (
@@ -184,7 +187,7 @@ export type SentryError =
 
 export type SentryErrorProps = {
   messagePrefix?: string;
-  request?: Request;
+  request?: KoaRequest;
   response?: Response;
   path?: string;
   userId?: string | number;
@@ -238,7 +241,7 @@ export class Server<
   port: number;
   allowedOrigins: Set<string>;
   koaApp: KoaApp<TAppContext, TDatabaseModels>;
-  router: KoaRouter;
+  router: KoaRouter<RouteContext<TAppContext, TDatabaseModels>>;
   routes: Set<Route<TAppContext, TDatabaseModels>>;
   routeParams: Set<RouteParam>;
   middleware: Set<Middleware<ContextState, RouteContext<TAppContext, TDatabaseModels>>>;
@@ -624,13 +627,7 @@ export class Server<
       await i18nextInstance.changeLanguage(lng);
       Server.setContextLang(ctx, lng, Server.LANG_DETECTION_DEFAULT_OPTIONS);
       //
-      ctx.t = function translate(...args) {
-        if (typeof ctx?.i18next?.t === 'function') {
-          // @ts-ignore
-          return ctx.i18next.t.apply(ctx.i18next, [...args]);
-        }
-        return 'Failed to translate string';
-      };
+      ctx.t = i18nextInstance.t;
       //
       await next();
     });
@@ -820,7 +817,6 @@ export class Server<
     };
     //
     const ws = new WebsocketServer(
-      // @ts-ignore
       httpServerOrPort,
       merge(
         {
@@ -861,8 +857,7 @@ export class Server<
         return;
       }
       //
-      const adapter = this.ws.of('/').adapter as unknown as RedisAdapter;
-      await adapter.remoteJoin(socket.id, `${roomId}`);
+      await socket.join(`${roomId}`);
     } catch (err) {
       this.logger.error(err as Error);
       this.sentry?.captureException(err);
@@ -982,8 +977,7 @@ export class Server<
       }
       return;
     }
-    // @ts-ignore
-    let meta: TodoAny = error.data || {};
+    let meta = 'data' in error ? error.data ?? {} : {};
     //
     if (error instanceof DefaultError && error.originalError instanceof DefaultError) {
       meta = { ...error.originalError.data, ...meta };
@@ -1047,14 +1041,12 @@ export class Server<
     //
     this.sentry.withScope((scope) => {
       if (request) {
-        // @ts-ignore
-        scope.addEventProcessor((event) => Sentry.Handlers.parseRequest(event, request));
+        scope.addEventProcessor((event) => Sentry.addRequestDataToEvent(event, request));
       }
-      //
-      const exception = typeof error === 'string' ? new Error(error) : error;
-      exception.message = `${messagePrefix}${exception.message}`;
-      // @ts-ignore
-      exception.data = meta;
+      const exception = new DefaultError(`${messagePrefix}${error.message}`, {
+        originalError: error,
+        meta,
+      });
       // Group errors together based on their message
       const fingerprint = ['{{ default }}'];
       if (messagePrefix) {
