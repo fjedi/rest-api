@@ -20,14 +20,11 @@ import { CorsOptions as ExpressCORSOptions } from 'cors';
 import bodyParser from 'koa-bodyparser';
 // HTTP header hardening
 import koaHelmet from 'koa-helmet';
-// // Parse userAgent
-// import UserAgent from 'useragent';
 // // Cookies
 import { SetOption } from 'cookies';
 // @ts-ignore
 import cookiesMiddleware from 'universal-cookie-koa';
 // High-precision timing, so we can debug response time to serve a request
-// @ts-ignore
 import ms from 'microseconds';
 import { get, pick, flattenDeep, merge, compact, map, trim } from 'lodash';
 // Sentry
@@ -90,9 +87,6 @@ export * from './helpers/uuid';
 export * from './helpers/numbers';
 export * from './helpers/env';
 
-// @ts-ignore
-type TodoAny = any;
-
 export type CORSOrigin = string | RegExp;
 
 export type CORSOptions = {
@@ -143,7 +137,7 @@ export type RouteContext<
 export type RouteHandler<TAppContext, TDatabaseModels extends DatabaseModels> = (
   ctx: RouteContext<TAppContext, TDatabaseModels>,
   next?: Next,
-) => TodoAny;
+) => unknown;
 
 export type ErrorHandler<TAppContext, TDatabaseModels extends DatabaseModels> = (
   err: DefaultError | ValidationError | OptimisticLockError | DatabaseError | UniqueConstraintError,
@@ -166,6 +160,11 @@ export type Route<TAppContext, TDatabaseModels extends DatabaseModels> = {
   route: string;
   handlers: RouteHandler<TAppContext, TDatabaseModels>[];
 };
+
+export type RouteInitializer<
+  TAppContext extends ParameterizedContext<ContextState, ParameterizedContext>,
+  TDatabaseModels extends DatabaseModels,
+> = (server: Server<TAppContext, TDatabaseModels>) => void;
 
 export type Translations = I18NextResource;
 
@@ -200,7 +199,7 @@ export type ServerParams<
   dbOptions: DatabaseConnectionOptions;
   bodyParserOptions?: bodyParser.Options;
   corsOptions?: KoaCORSOptions;
-  routes?: Array<(server: Server<TAppContext, TDatabaseModels>) => void>;
+  routes?: Array<RouteInitializer<TAppContext, TDatabaseModels>>;
   multiLangOptions?: MultiLangOptions;
   sentryOptions?: SentryOptions;
   contextHelpers?: Partial<ContextHelpers>;
@@ -245,7 +244,7 @@ export class Server<
   middleware: Set<Middleware<ContextState, RouteContext<TAppContext, TDatabaseModels>>>;
   beforeMiddleware: Set<Middleware<ContextState, RouteContext<TAppContext, TDatabaseModels>>>;
   koaAppFunc?: (app: Koa) => Promise<void>;
-  handler404?: (ctx: RouteContext<TAppContext, TDatabaseModels>) => Promise<TodoAny>;
+  handler404?: RouteInitializer<TAppContext, TDatabaseModels>;
   errorHandler?: ErrorHandler<TAppContext, TDatabaseModels>;
 
   static SYSTEM_ERROR_REGEXP = /(Database|Sequelize|Fatal|MySQL|PostgreSQL|Uncaught|Unhandled)/gim;
@@ -465,7 +464,10 @@ export class Server<
     // Init all API routes
     this.routes = new Set();
     //
-    routes?.forEach((r: TodoAny) => this.initRoute(r));
+    routes?.forEach(
+      (r: Route<TAppContext, TDatabaseModels> | RouteInitializer<TAppContext, TDatabaseModels>) =>
+        this.initRoute(r),
+    );
 
     // Custom middleware
     this.beforeMiddleware = new Set();
@@ -582,7 +584,12 @@ export class Server<
   }
 
   // Init all API routes recursively
-  initRoute(r: TodoAny | TodoAny[]): void {
+  initRoute(
+    r:
+      | RouteInitializer<TAppContext, TDatabaseModels>
+      | Route<TAppContext, TDatabaseModels>
+      | Route<TAppContext, TDatabaseModels>[],
+  ): void {
     if (Array.isArray(r)) {
       flattenDeep(r).forEach((route) => this.initRoute(route));
       return;
@@ -617,9 +624,12 @@ export class Server<
       await i18nextInstance.changeLanguage(lng);
       Server.setContextLang(ctx, lng, Server.LANG_DETECTION_DEFAULT_OPTIONS);
       //
-      ctx.t = function translate(...args: TodoAny) {
-        // @ts-ignore
-        return ctx.i18next.t.apply(ctx.i18next, [...args]);
+      ctx.t = function translate(...args) {
+        if (typeof ctx?.i18next?.t === 'function') {
+          // @ts-ignore
+          return ctx.i18next.t.apply(ctx.i18next, [...args]);
+        }
+        return 'Failed to translate string';
       };
       //
       await next();
@@ -859,7 +869,7 @@ export class Server<
     }
   }
 
-  async sendWSEvent(roomId: string, event: string, data?: { [k: string]: TodoAny }): Promise<void> {
+  async sendWSEvent(roomId: string, event: string, data?: Record<string, unknown>): Promise<void> {
     if (!this.wsEventEmitter) {
       logger.info(
         `Failed to send event "${event}" to the room "${roomId}, ws-server is not running"`,
@@ -885,7 +895,7 @@ export class Server<
   // 404 handler for the server.  By default, `kit/entry/server.js` will
   // simply return a 404 status code without modifying the HTML render.  By
   // setting a handler here, this will be returned instead
-  set404Handler(func: RouteHandler<TAppContext, TDatabaseModels>): void {
+  set404Handler(func: RouteInitializer<TAppContext, TDatabaseModels>): void {
     if (typeof func !== 'function') {
       throw new Error('404 handler must be a function');
     }
