@@ -1,6 +1,6 @@
 {
   "name": "@fjedi/rest-api",
-  "version": "4.0.3",
+  "version": "4.0.4",
   "description": "All-in-one REST API server",
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
