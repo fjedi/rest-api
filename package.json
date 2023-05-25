@@ -38,7 +38,6 @@
   },
   "homepage": "https://github.com/fjedi/rest-api#readme",
   "dependencies": {
-    "@fjedi/database-client": "4.6.7",
     "@fjedi/errors": "1.1.4",
     "@fjedi/jwt": "1.0.4",
     "@fjedi/logger": "1.46.3",
@@ -125,6 +124,9 @@
     "rimraf": "5.0.1",
     "ts-jest": "29.1.0",
     "typescript": "5.0.4"
+  },
+  "peerDependencies": {
+    "@fjedi/database-client": "4.6.7"
   },
   "lint-staged": {
     "*.(js|jsx|ts|tsx)": [
