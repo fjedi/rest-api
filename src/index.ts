@@ -231,6 +231,8 @@ export interface WSSocket extends Socket {
 
 export type WSServerOptions = ServerOptions;
 
+export type WSServer = WebsocketServer;
+
 export class Server<
   TAppContext extends ParameterizedContext<ContextState, ParameterizedContext>,
   TDatabaseModels extends DatabaseModels,
