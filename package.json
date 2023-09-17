@@ -1,6 +1,6 @@
 {
   "name": "@fjedi/rest-api",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "All-in-one REST API server",
   "main": "./lib/index.js",
   "files": [
@@ -15,7 +15,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "start": "tsc -w",
-    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "format": "prettier --write \"src/**/*.ts\"",
     "prepare": "npm run build && husky install",
     "prepublishOnly": "npm test && npm run lint",
     "preversion": "npm run lint",
