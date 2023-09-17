@@ -1,11 +1,6 @@
 /* eslint-disable import/prefer-default-export, no-console */
-// Display a border around a message
-import boxen from 'boxen';
-// Chalk library, to add colour to our console logs
-import chalk, { Chalk } from 'chalk';
 // IP library, for determining the local network interface
 import ip from 'ip';
-
 import { getServerURL } from './env';
 
 // ----------------------
@@ -13,15 +8,18 @@ export type ServerStartLogger = {
   host?: string;
   port?: number | string;
   allowSSL?: boolean;
-  chalk?: Chalk;
-  bold?: Chalk;
   type: string;
 };
 
-export function logServerStarted(opt: ServerStartLogger): void {
+export async function logServerStarted(opt: ServerStartLogger): Promise<void> {
+  // Display a border around a message
+  const { default: boxen } = await import('boxen');
+  // Chalk library, to add colour to our console logs
+  const { default: chalk } = await import('chalk');
+
   const { type, host, port, allowSSL } = opt;
   let message = chalk.green(
-    `Running ${(opt.chalk || chalk.bold)(type)} in ${chalk.bold(process.env.NODE_ENV)} mode\n\n`,
+    `Running ${chalk.bold(type)} in ${chalk.bold(process.env.NODE_ENV)} mode\n\n`,
   );
   message += `- ${chalk.bold('Local:           ')} ${getServerURL(host, `${port}`, allowSSL)}`;
 

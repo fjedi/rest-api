@@ -59,8 +59,7 @@ import i18next, {
   InitOptions as I18NextInitOptions,
   Resource as I18NextResource,
 } from 'i18next';
-// @ts-ignore
-import i18nextBackend from 'i18next-sync-fs-backend';
+import i18nextBackend from 'i18next-http-backend';
 //
 import { uuid } from './helpers/uuid';
 import { logServerStarted } from './helpers/console';
@@ -791,7 +790,7 @@ export class Server<
     this.httpServer.listen(this.port);
 
     // Log to the terminal that we're ready for action
-    logServerStarted({
+    await logServerStarted({
       type: 'server',
     });
 
