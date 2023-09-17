@@ -70,7 +70,7 @@
     "bignumber.js": "9.1.1",
     "bluebird": "3.7.2",
     "boxen": "5.1.2",
-    "chalk": "4.1.2",
+    "chalk": "5.3.0",
     "cookie": "0.5.0",
     "cookies": "0.8.0",
     "cors": "2.8.5",
