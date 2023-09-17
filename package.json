@@ -125,7 +125,7 @@
     "typescript": "5.0.4"
   },
   "peerDependencies": {
-    "@fjedi/database-client": "4.6.7"
+    "@fjedi/database-client": "4.6.8"
   },
   "lint-staged": {
     "*.(js|jsx|ts|tsx)": [
