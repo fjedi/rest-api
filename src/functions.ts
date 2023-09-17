@@ -56,10 +56,10 @@ export function getRawType(value: unknown): ObjectType {
 // let person1 = new SingletonPerson('zhl', 22);
 // let person2 = new SingletonPerson('cyw', 22);
 // logger.log(person1 === person2); // true
-export function singleton(func: unknown): ProxyConstructor {
-  let instance: any;
-  const handler = {
-    construct(target: any, args: any) {
+export function singleton(func: object): object {
+  let instance: object;
+  const handler: ProxyHandler<object> = {
+    construct(target, args) {
       if (!instance) {
         // Create an instance if there is not exist
         if (typeof func === 'function') {

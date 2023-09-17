@@ -37,7 +37,7 @@ export const LANG_DETECTORS = {
     let found;
     const locales = [];
     if (acceptLanguage) {
-      const lngs: { lng: string; q: any }[] = [];
+      const lngs: { lng: string; q: number }[] = [];
 
       // associate language tags by their 'q' value (between 1 and 0)
       acceptLanguage.split(',').forEach((l) => {
