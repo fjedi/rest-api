@@ -12,7 +12,6 @@
     "moduleResolution": "node16",
     "maxNodeModuleJsDepth": 10,
     "types": [
-      "./src/types",
       "node",
       "jest",
     ],
