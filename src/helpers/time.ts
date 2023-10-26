@@ -34,8 +34,16 @@ export interface TimeInstance extends Dayjs {
   startOf(unit: ISOUnitType): TimeInstance;
   endOf(unit: ISOUnitType): TimeInstance;
   isSame(date: ConfigType, unit?: ISOUnitType): boolean;
+  isSameOrBefore(date?: ConfigType, unit?: OpUnitType): boolean;
   isBefore(date: ConfigType, unit?: ISOUnitType): boolean;
   isAfter(date: ConfigType, unit?: ISOUnitType): boolean;
+  isSameOrAfter(date?: ConfigType, unit?: OpUnitType): boolean;
+  isBetween(
+    a: ConfigType,
+    b: ConfigType,
+    c?: OpUnitType | null,
+    d?: '()' | '[]' | '[)' | '(]',
+  ): boolean;
 
   // "UTC" plugin's methods
   utc(keepLocalTime?: boolean): TimeInstance;
