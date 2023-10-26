@@ -64,7 +64,7 @@
     "@types/koa-router": "7.4.5",
     "@types/socket.io-emitter": "3.1.0",
     "@types/useragent": "2.3.2",
-    "@types/uuid": "9.0.4",
+    "@types/uuid": "9.0.6",
     "@types/yup": "0.29.14",
     "bignumber.js": "9.1.2",
     "bluebird": "3.7.2",
