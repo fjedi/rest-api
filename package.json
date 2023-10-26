@@ -54,7 +54,7 @@
     "@types/http-terminator": "2.0.3",
     "@types/invariant": "2.2.35",
     "@types/ioredis": "4.28.10",
-    "@types/ip": "1.1.0",
+    "@types/ip": "1.1.2",
     "@types/json-buffer": "3.0.0",
     "@types/kcors": "2.2.6",
     "@types/koa": "2.13.9",
