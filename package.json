@@ -46,7 +46,7 @@
     "@sentry/types": "7.75.1",
     "@socket.io/redis-adapter": "8.2.1",
     "@socket.io/redis-emitter": "5.1.0",
-    "@types/component-emitter": "1.2.13",
+    "@types/component-emitter": "1.2.14",
     "@types/cookie": "0.5.3",
     "@types/cors": "2.8.15",
     "@types/geoip-lite": "1.4.3",
